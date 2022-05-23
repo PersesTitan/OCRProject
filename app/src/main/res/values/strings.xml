@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">OCRProject</string>
+    <string name="ocr">OCR</string>
+    <string name="value">값 출력되는 곳</string>
 </resources>
