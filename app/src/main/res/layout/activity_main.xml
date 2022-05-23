@@ -23,13 +23,14 @@
 
     <ImageView
         android:id="@+id/imageView"
+        android:scaleType="centerInside"
         android:layout_margin="20dp"
         android:layout_width="match_parent"
         android:layout_height="200dp"/>
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/camara"
-        android:text="촬영"
+        android:text="@string/capture"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
