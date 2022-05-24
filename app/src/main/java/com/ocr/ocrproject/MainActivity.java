@@ -23,6 +23,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    TessCore tessCore;
     String dataPath = "";
     String imagePath = "";
 
@@ -36,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        tessCore = new TessCore(this, binding);
 
         setSpinner();
         binding.textView.setText(null);
@@ -53,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == 0 && resultCode == RESULT_OK && data != null) {
             Bundle bundle = data.getExtras();
             Bitmap bitmap = (Bitmap) bundle.get("data");
-            image = bitmap;
+            tessCore.detectText(bitmap);
             binding.imageView.setImageBitmap(bitmap);
         }
     }

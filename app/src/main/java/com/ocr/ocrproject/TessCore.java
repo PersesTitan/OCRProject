@@ -6,9 +6,6 @@ import android.graphics.Bitmap;
 import com.googlecode.tesseract.android.TessBaseAPI;
 import com.ocr.ocrproject.databinding.ActivityMainBinding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TessCore implements LanguageList {
     ActivityMainBinding binding;
     Context context;
@@ -18,23 +15,30 @@ public class TessCore implements LanguageList {
         this.binding = binding;
     }
 
-    public List<String> detectText(Bitmap bitmap) {
-        List<String> list = new ArrayList<>();
+    public String detectText(Bitmap bitmap) {
+        int position = binding.languageSpinner.getSelectedItemPosition();
         TessDataManager tessDataManager = new TessDataManager(context, binding);
         tessDataManager.initTessTrainedData();
         TessBaseAPI tessBaseAPI = new TessBaseAPI();
         String path = tessDataManager.getTesseractFolder();
         tessBaseAPI.setDebug(true);
-        tessBaseAPI.init(path, getLanguage());
-
-
-
-        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, "");
-        return list;
+        tessBaseAPI.init(path, getLanguage(position));
+        //화이트 리스트
+        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_WHITELIST, filterLang(position));
+        //블렉 리스트
+        tessBaseAPI.setVariable(TessBaseAPI.VAR_CHAR_BLACKLIST, blackLang(position));
+        tessBaseAPI.setImage(bitmap);
+        String inspection = tessBaseAPI.getUTF8Text();
+        tessBaseAPI.end();
+        return inspection;
     }
 
-    private String filterLang() {
-        int position = binding.languageSpinner.getSelectedItemPosition();
+    private String blackLang(int position) {
+        if (position == 2) return etcLang2;
+        else return etcLang1;
+    }
+
+    private String filterLang(int position) {
         switch (position) {
             case 1: return engLang;
             case 2: return jpnLang;
@@ -42,8 +46,7 @@ public class TessCore implements LanguageList {
         }
     }
 
-    private String getLanguage() {
-        int position = binding.languageSpinner.getSelectedItemPosition();
+    private String getLanguage(int position) {
         switch (position) {
             case 1: return "eng";
             case 2: return "jpn";
