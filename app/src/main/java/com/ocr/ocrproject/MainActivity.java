@@ -15,15 +15,13 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 
+import com.googlecode.tesseract.android.TessBaseAPI;
 import com.ocr.ocrproject.databinding.ActivityMainBinding;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private final String shared = "filed";
-    private final String save = "SAVE";
 
     String dataPath = "";
     String imagePath = "";
@@ -52,15 +50,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        System.out.println("MainActivity.onActivityResult");
         if (requestCode == 0 && resultCode == RESULT_OK && data != null) {
             Bundle bundle = data.getExtras();
             Bitmap bitmap = (Bitmap) bundle.get("data");
+            image = bitmap;
             binding.imageView.setImageBitmap(bitmap);
         }
     }
 
     private void setSpinner() {
+        final String shared = "filed";
+        final String save = "SAVE";
         SharedPreferences sharedPreferences = getSharedPreferences(shared, 0);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         String[] list = {"한국어", "영어", "일본어"};
@@ -78,5 +78,26 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) { }
         });
+    }
+
+    /**
+     * @return spinner 값을 읽은 뒤에 값을 반환함
+     */
+    private String getLanguage() {
+        int position = binding.languageSpinner.getSelectedItemPosition();
+        switch (position) {
+            case 1: return "eng";
+            case 2: return "jpn";
+            default: return "kor";
+        }
+    }
+
+    private String extractText(Bitmap bitmap) {
+        TessBaseAPI tessBaseAPI = new TessBaseAPI();
+        tessBaseAPI.init(dataPath, getLanguage());
+        tessBaseAPI.setImage(bitmap);
+        String extractedText = tessBaseAPI.getUTF8Text();
+        tessBaseAPI.end();
+        return extractedText;
     }
 }
